@@ -12,6 +12,10 @@ const productSchema = mongoose.Schema({
     price: {
         type: Number,
         required: true,
+        validate: {
+            validator: (v) => v > 0,
+            message: props => `${props.value} must be greater than zero`
+        }
     },
     category: {
         type: String,
@@ -23,7 +27,11 @@ const productSchema = mongoose.Schema({
     },
     stock: {
         type: Number,
-        required: true
+        required: true,
+        validate: {
+            validator: (v) => v >= 0,
+            message: props => `${props.value} must be greater than or equal to zero`
+        }
     },
     createdAt: {
         type: Date,
