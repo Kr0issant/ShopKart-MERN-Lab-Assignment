@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from 'mongoose';
 import cookieParser from "cookie-parser";
 import customerRoutes from "./src/routes/customer.routes.js";
+import productRoutes from "./src/routes/product.routes.js";
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use('/customers', customerRoutes);
+app.use('/products', productRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
