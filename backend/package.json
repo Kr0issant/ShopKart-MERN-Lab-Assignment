@@ -5,11 +5,11 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "dev:nodemon": "nodemon server.js",
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "dev:nodemon": "nodemon index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
