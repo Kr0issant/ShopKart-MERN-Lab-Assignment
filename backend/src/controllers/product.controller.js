@@ -1,3 +1,4 @@
+import escapeRegex from "../utils/sanitizer.js";
 import Product from "../models/product.model.js";
 
 export async function addProduct(req, res) {
@@ -26,7 +27,11 @@ export async function addProduct(req, res) {
 
 export async function getProducts(req, res) {
     try {
-        const products = await Product.find({});
+        let query = {};
+        if (req.query.category) { query.category = req.query.category; }
+        if (req.query.name) { query.name = { $regex: escapeRegex(req.query.name), $options: "i" }; }
+
+        const products = await Product.find(query);
         return res.status(200).json({ success: true, count: products.length, products: products });
     } catch(error) {
         return res.status(500).json({ success: false, message: "Internal server error", error: error });
