@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import escapeRegex from "../utils/sanitizer.js";
+import { escapeRegex } from "../utils/sanitizer.js";
 import Product from "../models/product.model.js";
 
 export async function addProduct(req, res) {
