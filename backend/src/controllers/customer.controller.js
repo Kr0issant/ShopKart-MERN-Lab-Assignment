@@ -50,7 +50,7 @@ export async function registerCustomer(req, res) {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Internal Server Errorr",
+            message: "Internal Server Error",
             error: error
         });
     }
@@ -62,7 +62,7 @@ export async function loginCustomer(req, res) {
 
         const customer = await Customer.findOne({ email });
         if (!customer) {
-            return res.status(404).json({ success: false, message: "Customer Not Found. Please Register First" });
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
 
         const passwordCheck = await bcrypt.compare(password, customer.password);
@@ -77,7 +77,69 @@ export async function loginCustomer(req, res) {
     } catch(error) {
         res.status(500).json({
             success: false,
-            message: "Internal Server Errorr",
+            message: "Internal Server Error",
+            error: error
+        });
+    }
+}
+
+export async function getCustomer(req, res) {
+    try {
+        res.status(200).json({
+            _id: req.user._id, 
+            fullName: req.user.fullName, 
+            email: req.user.email,
+            phone: req.user.phone
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error
+        });
+    }
+}
+
+export async function logoutCustomer(req, res) {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: true
+    });
+
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+}
+
+export async function changePassword(req, res) {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: "Both old and new passwords are required" });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: "New password must contain at least 6 characters" });
+        }
+
+        const customer = await Customer.findById(req.user._id);
+        if (!customer) {
+            return res.status(404).json({ success: false, message: "Customer not found" });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, customer.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Incorrect old password" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        customer.password = await bcrypt.hash(newPassword, salt);
+        await customer.save();
+
+        res.status(200).json({ success: true, message: "Password changed successfully" });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
             error: error
         });
     }
