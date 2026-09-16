@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import escapeRegex from "../utils/sanitizer.js";
 import Product from "../models/product.model.js";
 
@@ -5,8 +6,8 @@ export async function addProduct(req, res) {
     try {
         const { name, description, price, category, image, stock } = req.body;
 
-        if (!name || !description || !price || !category || !image || !stock) {
-            return res.status(400).json({ message: "All fields are required" });
+        if (!name || !description || price === undefined || !category || !image || stock === undefined) {
+            return res.status(400).json({ success: false, message: "All fields are required" });
         }
         if (stock < 0) {
             return res.status(400).json({ success: false, message: "Stock must not be negative" });
@@ -29,11 +30,15 @@ export async function getProducts(req, res) {
     try {
         let query = {};
         if (req.query.category) { query.category = req.query.category; }
-        if (req.query.name) { query.name = { $regex: escapeRegex(req.query.name), $options: "i" }; }
+        if (req.query.search) { query.name = { $regex: escapeRegex(req.query.search), $options: "i" }; }
 
-        const products = await Product.find(query);
+        let sort = {};
+        if (req.query.sort === "price_asc") { sort = { price: 1 }; }
+        else if (req.query.sort === "price_desc") { sort = { price: -1 }; }
+
+        const products = await Product.find(query).sort(sort);
         return res.status(200).json({ success: true, count: products.length, products: products });
-    } catch(error) {
+    } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server error", error: error });
     }
 }
@@ -41,13 +46,17 @@ export async function getProducts(req, res) {
 export async function getProduct(req, res) {
     try {
         const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid product ID" });
+        }
+
         const product = await Product.findById(id);
         if (!product) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
-
-        return res.status(200).json({ success: true, product: product });
-    } catch(error) {
-        return res.status(500).json({ success: false, message: "Internal server error", error: error });
+        
+        return res.status(200).json({ success: true, product });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal server error", error });
     }
 }
