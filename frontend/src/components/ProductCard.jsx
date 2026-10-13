@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { addToWishlist, removeFromWishlist } from "../services/api";
+import { useCart } from "../context/CartContext";
 
 const ProductCard = ({ product, isWishlisted = false, onWishlistChange }) => {
+  const { addToCart, mutatingItemId } = useCart();
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
+  const isAdding = mutatingItemId === product._id;
+  const [addedAnim, setAddedAnim] = useState(false);
   const [wishlistState, setWishlistState] = useState(isWishlisted ? "saved" : "idle"); // idle | saving | saved | error
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -44,6 +48,25 @@ const ProductCard = ({ product, isWishlisted = false, onWishlistChange }) => {
           setWishlistState(isWishlisted ? "saved" : "idle");
         }, 3500);
       }
+    }
+  };
+
+  const handleAddToCartClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isOutOfStock || isAdding) return;
+    setErrorMessage("");
+
+    try {
+      await addToCart(product._id);
+      setAddedAnim(true);
+      setTimeout(() => setAddedAnim(false), 2000);
+    } catch (err) {
+      console.error("Card add to cart failed:", err);
+      setErrorMessage(
+        err.response?.data?.message || "Failed to add to cart"
+      );
+      setTimeout(() => setErrorMessage(""), 3500);
     }
   };
 
@@ -138,14 +161,48 @@ const ProductCard = ({ product, isWishlisted = false, onWishlistChange }) => {
         <div className="product-card-actions">
           <Link
             to={`/products/${product._id}`}
-            className="btn-card-details full-width"
+            className="btn-card-details"
           >
-            <span>View Details</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <span>Details</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </Link>
+
+          <button
+            type="button"
+            className={`btn-card-add-cart ${addedAnim ? "added" : ""}`}
+            onClick={handleAddToCartClick}
+            disabled={isOutOfStock || isAdding}
+          >
+            {isOutOfStock ? (
+              "Sold Out"
+            ) : isAdding ? (
+              <>
+                <svg className="spin-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                <span>Adding...</span>
+              </>
+            ) : addedAnim ? (
+              <>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Added!</span>
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                <span>Add to Cart</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

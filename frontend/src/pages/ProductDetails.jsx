@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getProductById, addToWishlist, removeFromWishlist, getWishlist } from "../services/api";
+import { useCart } from "../context/CartContext";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [cartError, setCartError] = useState("");
   const [wishlistState, setWishlistState] = useState("idle"); // idle | saving | saved | error
   const [wishlistError, setWishlistError] = useState("");
 
@@ -77,11 +81,25 @@ const ProductDetails = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => {
-      setAddedToCart(false);
-    }, 2500);
+  const handleAddToCart = async () => {
+    if (addingToCart || isOutOfStock) return;
+    setAddingToCart(true);
+    setCartError("");
+    try {
+      await addToCart(id);
+      setAddedToCart(true);
+      setTimeout(() => {
+        setAddedToCart(false);
+      }, 2500);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
+      setCartError(
+        err.response?.data?.message || "Failed to add product to cart. Please try again."
+      );
+      setTimeout(() => setCartError(""), 3500);
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   if (loading) {
@@ -171,10 +189,17 @@ const ProductDetails = () => {
               type="button"
               className={`btn btn-primary btn-add-cart ${addedToCart ? "btn-added" : ""}`}
               onClick={handleAddToCart}
-              disabled={isOutOfStock}
+              disabled={isOutOfStock || addingToCart}
             >
               {isOutOfStock ? (
                 "Out of Stock"
+              ) : addingToCart ? (
+                <>
+                  <svg className="spin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                  Adding to Bag...
+                </>
               ) : addedToCart ? (
                 <>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -240,6 +265,12 @@ const ProductDetails = () => {
               )}
             </button>
           </div>
+
+          {cartError && (
+            <div className="product-details-wishlist-error" role="alert">
+              {cartError}
+            </div>
+          )}
 
           {wishlistError && (
             <div className="product-details-wishlist-error" role="alert">

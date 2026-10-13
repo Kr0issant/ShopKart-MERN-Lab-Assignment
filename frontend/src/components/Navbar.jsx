@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import ChangePasswordModal from "./ChangePasswordModal";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { totalUnits } = useCart();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,7 +71,7 @@ const Navbar = () => {
       clearTimeout(timer);
       window.removeEventListener("resize", updateIndicator);
     };
-  }, [location.pathname, user]);
+  }, [location.pathname, user, totalUnits]);
 
   return (
     <>
@@ -114,6 +116,21 @@ const Navbar = () => {
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                   </svg>
                   <span>Wishlist</span>
+                </NavLink>
+
+                <NavLink
+                  to="/cart"
+                  className={({ isActive }) => (isActive ? "nav-link active nav-cart-link" : "nav-link nav-cart-link")}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="nav-cart-icon">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                  </svg>
+                  <span>Cart</span>
+                  <span className={`nav-cart-badge ${totalUnits > 0 ? "has-items" : ""}`}>
+                    {totalUnits}
+                  </span>
                 </NavLink>
 
                 <NavLink
