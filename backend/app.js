@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import cookieParser from "cookie-parser";
 import customerRoutes from "./src/routes/customer.routes.js";
 import productRoutes from "./src/routes/product.routes.js";
+import wishlistRoutes from "./src/routes/wishlist.routes.js";
 
 dotenv.config()
 
@@ -25,6 +26,7 @@ app.use(cookieParser())
 
 app.use('/customers', customerRoutes);
 app.use('/products', productRoutes);
+app.use('/wishlist', wishlistRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

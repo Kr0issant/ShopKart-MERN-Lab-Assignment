@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getProducts } from "../services/api";
+import { getProducts, getWishlist } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import SearchFilterBar from "../components/SearchFilterBar";
 
@@ -7,6 +7,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [wishlistIds, setWishlistIds] = useState(new Set());
 
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All Categories");
@@ -41,6 +42,30 @@ const Products = () => {
       setLoading(false);
     }
   }, [searchTerm, category, sort]);
+
+  // Load wishlist IDs to initialize card states
+  useEffect(() => {
+    const fetchUserWishlist = async () => {
+      try {
+        const res = await getWishlist();
+        if (res.success && Array.isArray(res.wishlist)) {
+          setWishlistIds(new Set(res.wishlist.map((p) => p._id || p)));
+        }
+      } catch {
+        // silent fail
+      }
+    };
+    fetchUserWishlist();
+  }, []);
+
+  const handleWishlistChange = (productId, saved) => {
+    setWishlistIds((prev) => {
+      const next = new Set(prev);
+      if (saved) next.add(productId);
+      else next.delete(productId);
+      return next;
+    });
+  };
 
   // Debounce search/filter query
   useEffect(() => {
@@ -132,7 +157,12 @@ const Products = () => {
 
           <div className="products-grid">
             {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard
+                key={product._id}
+                product={product}
+                isWishlisted={wishlistIds.has(product._id)}
+                onWishlistChange={handleWishlistChange}
+              />
             ))}
           </div>
         </>

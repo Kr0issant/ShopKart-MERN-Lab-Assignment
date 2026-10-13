@@ -3,7 +3,11 @@ import Customer from "../models/customer.model.js";
 
 export async function isAuthenticated(req, res, next) {
     try {
-        const token = req.cookies?.token;
+        let token = req.cookies?.token;
+        if (!token && req.headers?.authorization && req.headers.authorization.startsWith("Bearer ")) {
+            token = req.headers.authorization.split(" ")[1];
+        }
+
         if (!token) {
             return res.status(401).json({ success: false, message: "Not Authorized" });
         }
