@@ -134,6 +134,17 @@ const Navbar = () => {
                 </NavLink>
 
                 <NavLink
+                  to="/orders"
+                  className={({ isActive }) => (isActive ? "nav-link active nav-orders-link" : "nav-link nav-orders-link")}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="nav-orders-icon">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                  </svg>
+                  <span>Orders</span>
+                </NavLink>
+
+                <NavLink
                   to="/home"
                   className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
                 >

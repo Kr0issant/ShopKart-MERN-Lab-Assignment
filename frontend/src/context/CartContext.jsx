@@ -87,6 +87,11 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Immediate frontend cart state reset after verified checkout
+  const clearCartState = useCallback(() => {
+    setCartItems([]);
+  }, []);
+
   // Derived Values calculated directly from state
   const totalUnits = useMemo(() => {
     return cartItems.reduce((acc, item) => acc + (item.quantity || 0), 0);
@@ -105,7 +110,7 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const getItemQuantity = useCallback((productId) => {
-    const item = cartItems.find((i) => (i.product?._id || i.product) === productId);
+    const item = cartItems.find((i) => (i.product?._id || item.product) === productId);
     return item ? item.quantity : 0;
   }, [cartItems]);
 
@@ -119,6 +124,7 @@ export const CartProvider = ({ children }) => {
     addToCart,
     updateQuantity,
     removeFromCart,
+    clearCartState,
     refreshCart: fetchCart,
     isItemInCart,
     getItemQuantity

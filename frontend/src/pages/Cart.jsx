@@ -49,14 +49,6 @@ const Cart = () => {
       {/* Page Header */}
       <div className="cart-hero-header">
         <div className="cart-hero-info">
-          <div className="cart-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
-            <span>Shopping Cart</span>
-          </div>
           <h1>My Cart</h1>
           <p className="cart-subtitle">
             Review your chosen products, adjust quantities, and proceed to checkout.
@@ -202,17 +194,16 @@ const Cart = () => {
 
               <p className="summary-tax-note">Taxes calculated during checkout.</p>
 
-              <button
-                type="button"
+              <Link
+                to="/checkout"
                 className="btn-checkout-cta"
-                onClick={() => alert("Checkout will be available in Lab 06!")}
               >
                 <span>Proceed to Checkout</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
                 </svg>
-              </button>
+              </Link>
 
               <div className="summary-perks">
                 <div className="summary-perk-item">
@@ -229,7 +220,7 @@ const Cart = () => {
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
-                  <span>Encrypted 256-bit secure checkout</span>
+                  <span>Safe &amp; secure payment</span>
                 </div>
               </div>
             </div>
