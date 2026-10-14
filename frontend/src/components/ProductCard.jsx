@@ -122,13 +122,21 @@ const ProductCard = ({ product, isWishlisted = false, onWishlistChange }) => {
           </h3>
         </Link>
 
+
         {/* Pricing and Stock Badge */}
         <div className="product-card-meta">
           <div className="price-group">
-            <span className="product-currency">₹</span>
-            <span className="product-card-price">
-              {product.price?.toLocaleString("en-IN")}
-            </span>
+            <div className="current-price-row">
+              <span className="product-currency">₹</span>
+              <span className="product-card-price">
+                {product.price?.toLocaleString("en-IN")}
+              </span>
+            </div>
+            {product.price > 0 && (
+              <span className="product-original-price">
+                ₹{Math.round(product.price * 1.22).toLocaleString("en-IN")}
+              </span>
+            )}
           </div>
 
           <span

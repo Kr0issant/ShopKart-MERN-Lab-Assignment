@@ -157,18 +157,35 @@ const ProductDetails = () => {
 
         {/* Right: Product Info */}
         <div className="product-details-info">
-          <div className="product-category-badge">{product.category}</div>
+          <div className="product-category-row">
+            <span className="product-category-badge">{product.category}</span>
+          </div>
+
           <h1 className="product-details-title">{product.name}</h1>
 
           <div className="product-details-price-row">
-            <span className="product-details-price">
-              ₹{product.price?.toLocaleString("en-IN")}
-            </span>
+            <div className="price-stack">
+              <span className="product-details-price">
+                ₹{product.price?.toLocaleString("en-IN")}
+              </span>
+              {product.price > 0 && (
+                <div className="details-discount-group">
+                  <span className="product-details-original">
+                    M.R.P. ₹{Math.round(product.price * 1.25).toLocaleString("en-IN")}
+                  </span>
+                  <span className="savings-badge">
+                    Save ₹{(Math.round(product.price * 1.25) - product.price).toLocaleString("en-IN")} (20% OFF)
+                  </span>
+                </div>
+              )}
+            </div>
+
             <span
               className={`product-stock-badge ${
                 isOutOfStock ? "stock-out" : product.stock <= 5 ? "stock-low" : "stock-in"
               }`}
             >
+              <span className="stock-dot" />
               {isOutOfStock
                 ? "Out of Stock"
                 : product.stock <= 5
@@ -180,7 +197,7 @@ const ProductDetails = () => {
           <div className="product-details-divider"></div>
 
           <div className="product-details-section">
-            <h3>Description</h3>
+            <h3>Product Overview</h3>
             <p className="product-description-text">{product.description}</p>
           </div>
 

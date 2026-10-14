@@ -234,6 +234,28 @@ const Checkout = () => {
 
   return (
     <div className="checkout-page container">
+      {/* 3-Step Checkout Milestone Breadcrumb */}
+      <div className="checkout-step-progress">
+        <Link to="/cart" className="step-node completed">
+          <div className="step-circle">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <span className="step-label">Shopping Bag</span>
+        </Link>
+        <div className="step-connector completed" />
+        <div className="step-node active">
+          <div className="step-circle">2</div>
+          <span className="step-label">Shipping &amp; Payment</span>
+        </div>
+        <div className="step-connector" />
+        <div className="step-node">
+          <div className="step-circle">3</div>
+          <span className="step-label">Confirmation</span>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="checkout-hero-header">
         <div className="checkout-hero-info">
@@ -399,6 +421,25 @@ const Checkout = () => {
                   {formErrors.pincode && (
                     <span className="field-error-text">{formErrors.pincode}</span>
                   )}
+                </div>
+              </div>
+
+              {/* Supported Payment Channels */}
+              <div className="checkout-payment-methods-strip">
+                <div className="payment-methods-header">
+                  <span className="methods-label">Accepted Online Payment Methods:</span>
+                  <span className="methods-shield-tag">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    256-Bit Encrypted
+                  </span>
+                </div>
+                <div className="payment-channels-row">
+                  <span className="channel-pill">UPI / QR</span>
+                  <span className="channel-pill">Debit &amp; Credit Cards</span>
+                  <span className="channel-pill">NetBanking</span>
+                  <span className="channel-pill">Wallets</span>
                 </div>
               </div>
 
