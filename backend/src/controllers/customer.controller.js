@@ -2,10 +2,13 @@ import Customer from "../models/customer.model.js";
 import bcrypt from 'bcrypt';
 import { genToken } from "../utils/generateToken.js";
 
+const isProduction = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
+
 const cookiesOptions = {
     httpOnly: true,
-    secure: true
-}
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax"
+};
 
 export async function registerCustomer(req, res) {
     try {
@@ -101,10 +104,7 @@ export async function getCustomer(req, res) {
 }
 
 export async function logoutCustomer(req, res) {
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: true
-    });
+    res.clearCookie("token", cookiesOptions);
 
     res.status(200).json({ success: true, message: "Logged out successfully" });
 }
